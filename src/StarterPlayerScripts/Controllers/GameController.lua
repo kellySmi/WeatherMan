@@ -73,6 +73,7 @@ function GameController.listenGameUpdates()
 end
 function GameController.KnitStart()
     GameController.GameService = Knit.GetService("GameService")
+    
    -- GameController.ScreenGUIController = Knit.GetController("ScreenGUIController")
     -- local player = game:GetService("Players").LocalPlayer
     -- GameController.GameMenu = player:WaitForChild("PlayerGui"):WaitForChild("GameMenu")

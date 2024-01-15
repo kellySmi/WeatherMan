@@ -10,25 +10,27 @@ local GameService = Knit.CreateService( {
     runningGame=false
 })
 GameService.CurrentGame = {round=1,roundWinners={}}
--- GameService.BoardData = {
---     stones = {
---         {  stoneName = "field1",
---             position = {41.25, 25, 105.75},
---             size = { 14.5, 1, 12.7 },
---             instances = {},
---             timer=8
---         }
---     },
-    
---     colors={"White", "Bright red","Bright blue","Bright yellow","Bright green","Bright violet","Bright orange","Black"}
--- }
+ GameService.BoardData = {
+    boardCoord = {41.25, 25, 105.75}, 
+    --  {  stoneName = "field1",
+    --  position = {41.25, 25, 105.75},
+    --  size = { 14.5, 1, 12.7 },
+    --  instances = {},
+    --             timer=8
+    --         }
+    selectionGUIName = "WeatherSelectionGui",
+    weather={"Thunderstorms", "Tornado","Snowstorm","Hurricane","Flood","Tsunami","Landslide","Sunny"}
+ }
 function GameService.TeleportPlayersToGame(player, fromLobby,winnerList)
     local players = GameService.PlayerService.PlayerList
-    local randy = Random.new()
+  
+
     if fromLobby then
         for _, plyer in ipairs(players) do
+            local randy = Random.new() -- rando pos for each player.
             -- pick random piece position
-            GameService.teleportToPlace(plyer,GameService.BoardData.stones[1].instances[randy:NextInteger(1,#GameService.BoardData.stones[1].instances)].position)
+            GameService.teleportToPlace(plyer,
+                GameService.BoardData.boardCoord[1].instances[randy:NextInteger(1,#GameService.BoardData.stones[1].instances)].position)
         end
     else
         -- just do the winner of the last round back to the winners spawn plate
@@ -42,10 +44,8 @@ function GameService.TeleportPlayersToGame(player, fromLobby,winnerList)
 end
 function GameService.teleportToPlace(player, dest)
     
-    local newDest = Vector3.new(dest[1], dest[2],dest[3]) 
+    local newDest = Vector3.new(dest[1], dest[2], dest[3]) 
     player.Character:MoveTo(newDest)
-   --  task.wait(5)
-
 end
 
 function GameService.Client:PlayerAdded(player)
@@ -53,7 +53,7 @@ function GameService.Client:PlayerAdded(player)
     -- if no running game then start game now with all players
     if not GameService.runningGame then
        GameService.StartGame(player)
-        -- the game should be running continuously after this2
+        -- print("the game should be running continuously until last player leaves")
     end
    
 end
@@ -61,10 +61,18 @@ end
 function GameService.StartGame(player)
 
     -- local update = {event="startTimer", allPlayers=true, timer=5}
-    -- GameService.showStartCountdown(player, update)
-    -- GameService.runningGame = true
-    -- -- begin game loop 
-    -- while GameService.runningGame do
+     GameService.runningGame = true
+     -- begin game loop 
+     -- teleport all players to terrain
+     while GameService.runningGame do
+       
+        -- show GUI to make selection
+        -- show timer while showing selection GUI 
+        -- hide GUI at end of timer recording all selections
+        -- display weather 
+        -- kill players with incorrect selections teleport back to lobby
+        -- repeate for winners
+
     --    GameService.startRound(player) 
     --     if #GameService.CurrentGame.roundWinners <= 1 then
     --         GameService.endRound(player)
@@ -84,7 +92,7 @@ function GameService.StartGame(player)
     --         GameService.FreezePlayers(false)
     --         GameService.CurrentGame.roundWinners = {}
     --     end
-    -- end
+     end
     -- -- print("ReStarting a new game now")
     -- -- task.wait(2)
     -- GameService.StartGame(player)
@@ -112,6 +120,7 @@ end
 function GameService.startRound(player)
     local rando = Random.new()
     local win = rando:NextInteger(1,#GameService.BoardData.colors)
+
     local winningColor = GameService.BoardData.colors[win]
     -- show timer GUI and start timer
     local update = {event="showWinnerStartCountdown", allPlayers=true, winner=winningColor, timer=5}
@@ -189,6 +198,8 @@ end
 
 function GameService.KnitStart()
     GameService.PlayerService = Knit.GetService("PlayerService")
+    print("Starting Game service")
+
 end
 
 return GameService
